@@ -1,9 +1,10 @@
 mod dominate;
 pub use dominate::Dominate;
 use std::slice::{Iter, IterMut};
+use std::iter::FromIterator;
 
 /// represents a pareto front
-#[derive(Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct ParetoFront<T: Dominate>
 {
     front: Vec<T>
@@ -53,27 +54,77 @@ impl<T: Dominate> ParetoFront<T>
         return true;
     }
 
-    /// returns the number of elements in the front
-    pub fn count(&self) -> usize
+    /// returns the pareto front as a slice
+    pub fn front(&self) -> &[T]
     {
-        return self.front.len();
+        self.front.as_slice()
+    }
+
+    /// returns the number of elements in the front
+    pub fn len(&self) -> usize
+    {
+        self.front.len()
     }
 
     /// returns an iterator
     pub fn iter(&self) -> Iter<T>
     {
-        return self.front.iter();
+        self.front.iter()
     }
 
     /// returns an iterator that allows modifying each value
     pub fn iter_mut(&mut self) -> IterMut<T>
     {
-        return self.front.iter_mut();
+        self.front.iter_mut()
     }
+}
+
+impl<T: Dominate> IntoIterator for ParetoFront<T>
+{
+    type Item = T;
+    type IntoIter = std::vec::IntoIter<T>;
 
     /// creates an iterator from value
-    pub fn into_iter(self) -> std::vec::IntoIter<T>
+    fn into_iter(self) -> Self::IntoIter
     {
-        return self.front.into_iter();
+        self.front.into_iter()
+    }
+}
+
+/// implement Into<Vec> trait to let user easily convert the collection into a vector
+impl<T: Dominate> Into<Vec<T>> for ParetoFront<T>
+{
+    /// this is free as the underlying datastructure is a vector
+    fn into(self) -> Vec<T>
+    {
+        self.front
+    }
+}
+
+/// implements the FromIterator trait to enable the collection of an iterator into a front
+impl<T: Dominate> FromIterator<T> for ParetoFront<T>
+{
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self
+    {
+        let mut front = ParetoFront::new();
+
+        for x in iter
+        {
+            front.push(x);
+        }
+
+        front
+    }
+}
+
+/// implements the Extend trait to let iterator add to an existing front
+impl<T: Dominate> Extend<T> for ParetoFront<T>
+{
+    fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I)
+    {
+        for x in iter
+        {
+            self.push(x);
+        }
     }
 }
