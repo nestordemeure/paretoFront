@@ -4,7 +4,6 @@ Rust library to build a pareto front incrementaly.
 
 ## TODO
 
-- add bench (criterion?) to test variants
 - add tests
 - add doc
 - add serde support

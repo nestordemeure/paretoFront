@@ -31,10 +31,10 @@ impl<T: Dominate> ParetoFront<T>
             {
                 // x was not part of the pareto front
                 // swap element with the previous element in order to percolate the best elements to the top
-                /*if index > 0
+                if index > 0
                 {
                     self.front.swap(index, index - 1);
-                }*/
+                }
                 return false;
             }
             else if x.dominate(element)
@@ -44,12 +44,16 @@ impl<T: Dominate> ParetoFront<T>
             }
         }
 
+        // removes the element that have been dominated
+        for (nb_id_already_removed, index) in indexes_dominated_elements.into_iter().enumerate()
+        {
+            // we correct the index by taking into account the number of indexes that have already been removed
+            // using the fact that they are strictly increasing
+            self.front.swap_remove(index - nb_id_already_removed);
+        }
+
         // x has not been dominated, it is thus part of the pareto front
         self.front.push(x);
-        for index in indexes_dominated_elements
-        {
-            self.front.swap_remove(index);
-        }
 
         return true;
     }
