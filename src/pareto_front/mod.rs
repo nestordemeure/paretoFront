@@ -18,13 +18,33 @@ impl<T: Dominate> ParetoFront<T>
         return ParetoFront { front: Vec::new() };
     }
 
+    /// removes all elements in the front that are dominated by x
+    /// starting at index_start
+    fn remove_dominated_from_index(&mut self, x: &T, index_start: usize)
+    {
+        // lists all elements dominated by x, starting at index_start
+        let mut index_dominated_elements = Vec::new();
+        for (index, element) in self.front.iter().enumerate().skip(index_start)
+        {
+            if x.dominate(element)
+            {
+                index_dominated_elements.push(index);
+            }
+        }
+
+        // removes the elements at the dominated indexes
+        // taking into acount that each removed index will shift all the following indexes
+        for (nb_elements_removed, index) in index_dominated_elements.into_iter().enumerate()
+        {
+            self.front.swap_remove(index - nb_elements_removed);
+        }
+    }
+
     /// adds an element to the front
     /// returns `true` if the element was in the pareto front
     /// returns `false` if the element was dominated and, thus, not added
     pub fn push(&mut self, x: T) -> bool
     {
-        let mut indexes_dominated_elements = Vec::new();
-
         for (index, element) in self.front.iter().enumerate()
         {
             if element.dominate(&x)
@@ -40,21 +60,14 @@ impl<T: Dominate> ParetoFront<T>
             else if x.dominate(element)
             {
                 // x dominated an element and is thus part of the pareto front
-                indexes_dominated_elements.push(index);
+                self.remove_dominated_from_index(&x, index + 1);
+                self.front[index] = x;
+                return true;
             }
-        }
-
-        // removes the element that have been dominated
-        for (nb_id_already_removed, index) in indexes_dominated_elements.into_iter().enumerate()
-        {
-            // we correct the index by taking into account the number of indexes that have already been removed
-            // using the fact that they are strictly increasing
-            self.front.swap_remove(index - nb_id_already_removed);
         }
 
         // x has not been dominated, it is thus part of the pareto front
         self.front.push(x);
-
         return true;
     }
 
