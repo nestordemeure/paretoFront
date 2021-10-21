@@ -14,13 +14,13 @@
 //!
 //! ## Usage
 //!
-//!  Elements to be inserted in the Pareto front should implement the `Dominate` trait:
+//! Elements to be inserted in the Pareto front should implement the `Dominate` trait:
 //!
 //! ```rust
-//! use pareto_front::{Dominate, ParetoFront};
-//!
+//! # use pareto_front::{Dominate, ParetoFront};
+//! #
 //! /// type that will be pushed in the Pareto front
-//! #[derive(Debug, PartialEq)]
+//! #[derive(PartialEq)]
 //! struct ParetoElement
 //! {
 //!     cost: usize, // to be minimized
@@ -41,6 +41,26 @@
 //! New elements can be added to a Pareto front using the `push` method (one can also `collect` an iterator into a Pareto front):
 //!
 //! ```rust
+//! # use pareto_front::{Dominate, ParetoFront};
+//! #
+//! # /// type that will be pushed in the Pareto front
+//! # #[derive(PartialEq)]
+//! # struct ParetoElement
+//! # {
+//! #    cost: usize, // to be minimized
+//! #    quality: f32, // to be maximized
+//! # }
+//! #
+//! # /// implement the `Dominate` trait so that the elements can be pushed into the front
+//! # impl Dominate for ParetoElement
+//! # {
+//! #    /// returns `true` is `self` is better than `x` on all fields that matter to us
+//! #    fn dominate(&self, x: &Self) -> bool
+//! #    {
+//! #        (self.cost <= x.cost) && (self.quality >= x.quality) && (self != x)
+//! #    }
+//! # }
+//! #
 //! // data to be put in the front
 //! let x = ParetoElement { cost: 35, quality: 0.5 };
 //! let y = ParetoElement { cost: 350, quality: 0.05 };
@@ -52,12 +72,12 @@
 //! front.push(y);
 //!
 //! // note that `push` returns a boolean to tell you if the point you just inserted is part of the current Pareto front
-//! let z_is_optimal = front.push(z);
+//! let z_is_pareto_optimal = front.push(z);
 //! ```
 //!
 //! The resultng Pareto front can be converted into an iterator, a slice or a vector.
 
 #![allow(dead_code)]
 mod pareto_front;
-pub use pareto_front::Dominate;
-pub use pareto_front::ParetoFront;
+pub use self::pareto_front::Dominate;
+pub use self::pareto_front::ParetoFront;

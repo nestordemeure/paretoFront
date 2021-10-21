@@ -20,7 +20,7 @@ Elements to be inserted in the Pareto front should implement the `Dominate` trai
 use pareto_front::{Dominate, ParetoFront};
 
 /// type that will be pushed in the Pareto front
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq)]
 struct ParetoElement
 {
     cost: usize, // to be minimized
@@ -52,14 +52,13 @@ front.push(x);
 front.push(y);
 
 // note that `push` returns a boolean to tell you if the point you just inserted is part of the current Pareto front
-let z_is_optimal = front.push(z);
+let z_is_pareto_optimal = front.push(z);
 ```
 
-The resultng Pareto front can be converted into an iterator, a slice or a vector.
+The resulting Pareto front can be converted into an iterator, a slice or a vector.
 
 ## TODO
 
-- add examples to the doc (push, extend and dominate)
 - add tests
-- add parallel version
+- add concurent version
 - push to crates.io

@@ -20,7 +20,7 @@ impl<T: Dominate> ParetoFront<T>
     }
 
     /// Removes all elements in the front that are dominated by `new_element`,
-    /// starting at index `index_start`
+    /// starting at index `index_start`.
     fn _remove_dominated_starting_at(&mut self, new_element: &T, index_start: usize)
     {
         // lists all elements dominated by `new_element`, starting at index `index_start`
@@ -50,6 +50,37 @@ impl<T: Dominate> ParetoFront<T>
     /// but is optimized to favour early stopping and cache friendly.
     ///
     /// This operation might *not* preserve the ordering of the elements in the front.
+    ///
+    /// ```rust
+    /// # use pareto_front::{Dominate, ParetoFront};
+    /// #
+    /// # /// type that will be pushed in the Pareto front
+    /// # #[derive(PartialEq)]
+    /// # struct ParetoElement
+    /// # {
+    /// #    cost: usize, // to be minimized
+    /// #    quality: f32, // to be maximized
+    /// # }
+    /// #
+    /// # /// implement the `Dominate` trait so that the elements can be pushed into the front
+    /// # impl Dominate for ParetoElement
+    /// # {
+    /// #    /// returns `true` is `self` is better than `x` on all fields that matter to us
+    /// #    fn dominate(&self, x: &Self) -> bool
+    /// #    {
+    /// #        (self.cost <= x.cost) && (self.quality >= x.quality) && (self != x)
+    /// #    }
+    /// # }
+    /// #
+    /// # // data to be put in the front
+    /// # let x = ParetoElement { cost: 35, quality: 0.5 };
+    /// #
+    /// // a Pareto front
+    /// let mut front = ParetoFront::new();
+    ///
+    /// // inserts in the Pareto front
+    /// let is_pareto_optimal = front.push(x);
+    /// ```
     pub fn push(&mut self, new_element: T) -> bool
     {
         // for all elements of the pareto front, check whether they are dominated or dominate `new_element`
@@ -109,7 +140,7 @@ impl<T: Dominate> ParetoFront<T>
 
 impl<T: Dominate> Into<Vec<T>> for ParetoFront<T>
 {
-    /// Converts the Pareto front into a vector
+    /// Converts the Pareto front into a vector.
     /// This operation is free as the underlying datastructure is a vector.
     fn into(self) -> Vec<T>
     {
@@ -132,6 +163,36 @@ impl<T: Dominate> IntoIterator for ParetoFront<T>
 impl<T: Dominate> FromIterator<T> for ParetoFront<T>
 {
     /// Implements the `FromIterator` trait to enable the collection of an iterator into a `ParetoFront`.
+    ///
+    /// ```rust
+    /// # use pareto_front::{Dominate, ParetoFront};
+    /// #
+    /// # /// type that will be pushed in the Pareto front
+    /// # #[derive(PartialEq)]
+    /// # struct ParetoElement
+    /// # {
+    /// #    cost: usize, // to be minimized
+    /// #    quality: f32, // to be maximized
+    /// # }
+    /// #
+    /// # /// implement the `Dominate` trait so that the elements can be pushed into the front
+    /// # impl Dominate for ParetoElement
+    /// # {
+    /// #    /// returns `true` is `self` is better than `x` on all fields that matter to us
+    /// #    fn dominate(&self, x: &Self) -> bool
+    /// #    {
+    /// #        (self.cost <= x.cost) && (self.quality >= x.quality) && (self != x)
+    /// #    }
+    /// # }
+    /// #
+    /// # // data to be put in the front
+    /// # let x = ParetoElement { cost: 35, quality: 0.5 };
+    /// # let y = ParetoElement { cost: 35, quality: 0.5 };
+    /// # let z = ParetoElement { cost: 35, quality: 0.5 };
+    /// #
+    /// // builds a Pareto front from an iterator
+    /// let front : ParetoFront<_> = vec![x, y, z].into_iter().collect();
+    /// ```
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self
     {
         let mut front = ParetoFront::new();
