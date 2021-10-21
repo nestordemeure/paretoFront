@@ -2,8 +2,24 @@
 name = "pareto_front"
 version = "0.1.0"
 edition = "2018"
+authors = ["Nestor Demeure"]
+
+# description of the crate
+# see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata
+description = "Build a Pareto front incrementaly."
+repository = "https://github.com/nestordemeure/paretoFront"
+documentation = "https://docs.rs/pareto_front"
+readme = "README.md"
+keywords = ["pareto", "front", "multi-objective", "optimization"]
+categories = ["algorithms", "data-structures"] # crates.io/category_slugs
+license = "Apache-2.0"
+
+[features]
+default = ["pareto_front_serde"]
+pareto_front_serde = ["serde"]
 
 [dependencies]
+serde = { version = "1.0", optional = true, features = ["derive"] }
 
 [dev-dependencies]
 criterion = {version="0.3.5", features=["html_reports"]}

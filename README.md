@@ -1,12 +1,12 @@
 # Pareto Front
 
-Rust library to build a pareto front incrementaly.
+Rust library to build a [Pareto front](https://en.wikipedia.org/wiki/Pareto_front) incrementaly.
 
 ## TODO
 
-- add tests
 - add doc
+- add tests
 - add serde support
+- add parallel version
 - push to crates.io
-- add parallel version?
-- add macro to define dominate trait?
+- add macro to define dominate trait? (does not seem that useful now that the trait has been simplified)

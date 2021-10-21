@@ -20,7 +20,7 @@ impl<T: Dominate> ParetoFront<T>
 
     /// removes all elements in the front that are dominated by x
     /// starting at index_start
-    fn remove_dominated_from_index(&mut self, x: &T, index_start: usize)
+    fn _remove_dominated_starting_at(&mut self, x: &T, index_start: usize)
     {
         // lists all elements dominated by x, starting at index_start
         let mut index_dominated_elements = Vec::new();
@@ -60,7 +60,7 @@ impl<T: Dominate> ParetoFront<T>
             else if x.dominate(element)
             {
                 // x dominated an element and is thus part of the pareto front
-                self.remove_dominated_from_index(&x, index + 1);
+                self._remove_dominated_starting_at(&x, index + 1);
                 self.front[index] = x;
                 return true;
             }
@@ -72,7 +72,7 @@ impl<T: Dominate> ParetoFront<T>
     }
 
     /// returns the pareto front as a slice
-    pub fn front(&self) -> &[T]
+    pub fn as_slice(&self) -> &[T]
     {
         self.front.as_slice()
     }
@@ -96,6 +96,16 @@ impl<T: Dominate> ParetoFront<T>
     }
 }
 
+/// implement Into<Vec> trait to let user easily convert the collection into a vector
+impl<T: Dominate> Into<Vec<T>> for ParetoFront<T>
+{
+    /// this is free as the underlying datastructure is a vector
+    fn into(self) -> Vec<T>
+    {
+        self.front
+    }
+}
+
 impl<T: Dominate> IntoIterator for ParetoFront<T>
 {
     type Item = T;
@@ -105,16 +115,6 @@ impl<T: Dominate> IntoIterator for ParetoFront<T>
     fn into_iter(self) -> Self::IntoIter
     {
         self.front.into_iter()
-    }
-}
-
-/// implement Into<Vec> trait to let user easily convert the collection into a vector
-impl<T: Dominate> Into<Vec<T>> for ParetoFront<T>
-{
-    /// this is free as the underlying datastructure is a vector
-    fn into(self) -> Vec<T>
-    {
-        self.front
     }
 }
 
