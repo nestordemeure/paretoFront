@@ -5,6 +5,7 @@ use std::iter::FromIterator;
 
 /// represents a pareto front
 #[derive(Clone, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ParetoFront<T: Dominate>
 {
     front: Vec<T>
