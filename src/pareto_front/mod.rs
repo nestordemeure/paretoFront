@@ -86,7 +86,7 @@ impl<T: Dominate> ParetoFront<T>
         self.front.as_slice()
     }
 
-    /// Returns the number of elements in the Pareto front.
+    /// Returns the number of elements currently in the Pareto front.
     pub fn len(&self) -> usize
     {
         self.front.len()
@@ -145,7 +145,7 @@ impl<T: Dominate> FromIterator<T> for ParetoFront<T>
 
 impl<T: Dominate> Extend<T> for ParetoFront<T>
 {
-    /// Implements the `Extend` trait to extend a `ParetoFront` with the ocntent of an iterator.
+    /// Implements the `Extend` trait to extend a `ParetoFront` with the content of an iterator.
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I)
     {
         for x in iter
