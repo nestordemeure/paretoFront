@@ -59,8 +59,7 @@ The resultng Pareto front can be converted into an iterator, a slice or a vector
 
 ## TODO
 
-- add proper header page for the doc
-- add examples to the doc
+- add examples to the doc (push, extend and dominate)
 - add tests
 - add parallel version
 - push to crates.io

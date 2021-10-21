@@ -47,7 +47,9 @@ impl<T: Dominate> ParetoFront<T>
     /// Returns `false` if the element was dominated and, thus, not added to the front.
     ///
     /// This operation as `O(n)` complexity (where `n` is the number of elements currently in the Pareto front)
-    /// but is optimized to favour early stopping.
+    /// but is optimized to favour early stopping and cache friendly.
+    ///
+    /// This operation might *not* preserve the ordering of the elements in the front.
     pub fn push(&mut self, new_element: T) -> bool
     {
         // for all elements of the pareto front, check whether they are dominated or dominate `new_element`
