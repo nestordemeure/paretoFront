@@ -3,7 +3,8 @@ use pareto_front::Dominate;
 use rand::{Rng, SeedableRng, rngs::StdRng};
 use rand_distr::{Distribution, Uniform};
 
-/// test element type
+/// element to test the pareto front
+/// this, 2D, element type is a very common use case
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ParetoElementCircle
 {

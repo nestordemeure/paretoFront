@@ -6,7 +6,8 @@ use pareto_element::ParetoElementCircle as ParetoElement;
 // pareto front
 use pareto_front::ParetoFront;
 
-/// generates n data points and insert them one after the other in a pareto front
+/// inserts all the element from data into a pareto front using the `push` function
+/// we use push explicitely (instead of `collect`) to make it easy to test alternative push implementations
 fn generate_front(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
 {
     let mut front = ParetoFront::new();
@@ -17,6 +18,7 @@ fn generate_front(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
     front
 }
 
+/// measures the speed of several insertions in a row
 fn criterion_benchmark(c: &mut Criterion)
 {
     // data used for the bench
@@ -29,6 +31,7 @@ fn criterion_benchmark(c: &mut Criterion)
     c.bench_function("insert 5000", |b| b.iter(|| generate_front(&data)));
 }
 
+/// compares two implementation of the `push` function
 /*fn comparison_benchmark(c: &mut Criterion)
 {
     // data used for the bench

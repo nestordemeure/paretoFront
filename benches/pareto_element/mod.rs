@@ -1,9 +1,7 @@
-// fully random element
+//! Element types that used to run the `ParetoFront` benchmarks
 mod random;
 pub use random::ParetoElementRandom;
-// elements drawed from a 2D circle
 mod circle;
 pub use circle::ParetoElementCircle;
-// elements drawed from a 5D circle, a worst case scenario
-mod circle5D;
-pub use circle5D::ParetoElementCircle5D;
+mod circle5d;
+pub use circle5d::ParetoElementCircle5D;

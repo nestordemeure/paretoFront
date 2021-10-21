@@ -2,7 +2,9 @@
 use pareto_front::Dominate;
 use rand::{Rng, SeedableRng, rngs::StdRng};
 
-/// test element type
+/// element type to test the pareto front
+/// generated randomly for ease of use
+/// this means that the pareto front is likely to be tiny
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ParetoElementRandom
 {

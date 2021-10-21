@@ -4,9 +4,10 @@ use pareto_front::Dominate;
 use rand::{Rng, SeedableRng, rngs::StdRng};
 use rand_distr::{Distribution, Uniform};
 
-/// test element type
+/// elements to test the pareto front
 /// elements are in a 5D circle, due to the high dimenssion we expect a large number of them to be on the pareto front
-/// that should be a worst case situation
+/// that should be a *worst-case* situation
+/// (unlikely to happen in real use case as, in such a high dimenssion, the pareto front is close to meaningless)
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ParetoElementCircle5D
 {

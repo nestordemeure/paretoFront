@@ -15,7 +15,6 @@ categories = ["algorithms", "data-structures"] # crates.io/category_slugs
 license = "Apache-2.0"
 
 [features]
-default = ["pareto_front_serde"]
 pareto_front_serde = ["serde"]
 
 [dependencies]

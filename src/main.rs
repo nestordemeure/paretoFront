@@ -1,11 +1,9 @@
 #![allow(dead_code)]
 mod pareto_front;
-
-//---------------------------------------------------------------------------------------
-// TEST DATA
+use ::pareto_front::{Dominate, ParetoFront};
 
 /// test element
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 struct ParetoElement
 {
     cost: usize,
@@ -13,16 +11,14 @@ struct ParetoElement
     score: i64
 }
 
-impl pareto_front::Dominate for ParetoElement
+/// implement the `Dominate` trait
+impl Dominate for ParetoElement
 {
     fn dominate(&self, x: &Self) -> bool
     {
-        (self.cost <= x.cost) && (self.quality >= x.quality) && (self.score >= x.score)
+        (self.cost <= x.cost) && (self.quality >= x.quality) && (self.score >= x.score) && (self != x)
     }
 }
-
-//---------------------------------------------------------------------------------------
-// MAIN
 
 fn main()
 {
@@ -31,8 +27,8 @@ fn main()
     let y = ParetoElement { cost: 350, quality: 0.05, score: 2 };
     let z = ParetoElement { cost: 5, quality: 0.25, score: 5 };
 
-    // insertions in a front
-    let mut front = pareto_front::ParetoFront::new();
+    // insertions in the front
+    let mut front = ParetoFront::new();
     front.push(x);
     front.push(y);
     front.push(z);
