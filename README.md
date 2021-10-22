@@ -1,4 +1,4 @@
-# Pareto Front
+# Pareto Front ([crates.io](https://crates.io/crates/pareto_front))
 
 The `pareto_front` crate is a Rust library to build a [Pareto front](https://en.wikipedia.org/wiki/Pareto_front) incrementaly.
 
@@ -56,3 +56,10 @@ let z_is_pareto_optimal = front.push(z);
 ```
 
 The resulting Pareto front can be converted into an iterator, a slice or a vector.
+
+## TODO
+
+- write concurrent pareto front
+- test speed up (compare to lock on top of normal front?)
+- add test to make sure it produces the same front as the non concurent front
+- publish to crates.io

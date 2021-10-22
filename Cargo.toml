@@ -1,12 +1,12 @@
 [package]
 name = "pareto_front"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Nestor Demeure"]
 
 # description of the crate
 # see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata
-description = "Build a Pareto front incrementaly."
+description = "Builds a Pareto front incrementaly."
 repository = "https://github.com/nestordemeure/paretoFront"
 documentation = "https://docs.rs/pareto_front"
 readme = "README.md"
