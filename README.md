@@ -56,9 +56,3 @@ let z_is_pareto_optimal = front.push(z);
 ```
 
 The resulting Pareto front can be converted into an iterator, a slice or a vector.
-
-## TODO
-
-- add tests
-- add concurent version
-- push to crates.io
