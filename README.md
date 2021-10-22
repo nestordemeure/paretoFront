@@ -61,7 +61,7 @@ The resulting Pareto front can be converted into an iterator, a slice or a vecto
 
 - write concurrent pareto front
 - add clone and other traits
-- add from paretoFront method
-- make parking lot a feature only used in case of concurency?
+- add from/into paretoFront method
+- lock concurrency behind a feature to avoid having to import dependencies that are not used by most people?
 - add test to make sure it produces the same front as the non concurent front
 - publish to crates.io
