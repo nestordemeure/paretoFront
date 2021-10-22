@@ -1,7 +1,6 @@
-pub use crate::{Dominate, ParetoFront};
+use crate::{Dominate, ParetoFront};
 use thread_local::ThreadLocal;
 use std::{cell::UnsafeCell, marker::Send};
-use rayon::prelude::*;
 
 /// Represents a Pareto front that can be pushed into concurrently.
 /// TODO note on memory use
@@ -45,18 +44,5 @@ impl<T: Dominate + Send> ThreadSafeParetoFront<T>
                 f1
             })
             .unwrap_or_default() // returns the empty front in the absence of front
-    }
-
-    // very slightly faster on large cases but adds a dependency on rayon
-    pub fn par_into_sequential(self) -> ParetoFront<T>
-    {
-        let pareto_front: Vec<_> = self.inner_front.into_iter().map(|r| r.into_inner()).collect(); // remove refcells
-        pareto_front.into_par_iter().reduce(ParetoFront::new, |f1, f2| {
-                                        // accumulates in the larger front
-                                        let (mut f1, f2) =
-                                            if f1.len() > f2.len() { (f1, f2) } else { (f2, f1) };
-                                        f1.extend(f2);
-                                        f1
-                                    })
     }
 }
