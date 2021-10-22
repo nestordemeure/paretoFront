@@ -60,6 +60,8 @@ The resulting Pareto front can be converted into an iterator, a slice or a vecto
 ## TODO
 
 - write concurrent pareto front
-- test speed up (compare to lock on top of normal front?)
+- add clone and other traits
+- add from paretoFront method
+- make parking lot a feature only used in case of concurency?
 - add test to make sure it produces the same front as the non concurent front
 - publish to crates.io

@@ -4,7 +4,7 @@ use std::slice::{Iter, IterMut};
 use std::iter::FromIterator;
 
 /// Represents a Pareto front.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ParetoFront<T: Dominate>
 {
@@ -135,6 +135,16 @@ impl<T: Dominate> ParetoFront<T>
     pub fn iter_mut(&mut self) -> IterMut<T>
     {
         self.front.iter_mut()
+    }
+}
+
+impl<T: Dominate> Default for ParetoFront<T>
+{
+    /// Default value.
+    fn default() -> Self
+    {
+        // Manually implemented so as to not require `T` to implement `Default`.
+        Self::new()
     }
 }
 
