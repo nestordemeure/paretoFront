@@ -12,18 +12,17 @@ pub struct ThreadSafeParetoFront<T: Dominate + Send>
     inner_front: ThreadLocal<UnsafeCell<ParetoFront<T>>>
 }
 
-// TODO remove need for Default trait
 impl<T: Dominate + Send> ThreadSafeParetoFront<T>
 {
     /// Constructs a new, empty, Thread-safe Pareto front.
     pub fn new() -> Self
     {
-        return Self { inner_front: ThreadLocal::new() };
+        Self { inner_front: ThreadLocal::new() }
     }
 
     pub fn push(&self, new_element: T) -> bool
     {
-        // gets a mutable reference to the Pareto front bellonging to the current thread
+        // gets a mutable *pointer* to the Pareto front bellonging to the current thread
         let front_ptr = self.inner_front.get_or_default().get();
         // safe to mutate because only one thread can access a thread-local front
         // NOTE: this has been validated with a RefCell
@@ -36,7 +35,7 @@ impl<T: Dominate + Send> ThreadSafeParetoFront<T>
     {
         self.inner_front
             .into_iter()
-            .map(|r| r.into_inner()) // remove refcells
+            .map(|r| r.into_inner()) // remove UnsafeCells
             .reduce(|f1, f2| {
                 // accumulates in the larger front
                 let (mut f1, f2) = if f1.len() > f2.len() { (f1, f2) } else { (f2, f1) };

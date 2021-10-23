@@ -59,9 +59,10 @@ The resulting Pareto front can be converted into an iterator, a slice or a vecto
 
 ## TODO
 
-- write concurrent pareto front
-- add clone and other traits
+I need to polish the concurrent pareto front:
+
+- add clone and other common traits
 - add from/into paretoFront method
-- lock concurrency behind a feature to avoid having to import dependencies that are not used by most people?
+- lock concurrency behind a feature to avoid having to import dependencies that are not used by most people (?)
 - add test to make sure it produces the same front as the non concurent front
 - publish to crates.io
