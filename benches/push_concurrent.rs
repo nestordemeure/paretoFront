@@ -7,7 +7,7 @@ use pareto_element::ParetoElementCircle as ParetoElement;
 use rayon::prelude::*;
 // pareto front
 use pareto_front::ParetoFront;
-use pareto_front::ThreadSafeParetoFront;
+use pareto_front::ConcurrentParetoFront;
 
 /// inserts all the element from data into a pareto front using the `push` function
 fn generate_front(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
@@ -22,7 +22,7 @@ fn generate_front(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
 /// insert concurrently in thread local copies of the thread that are merged after the fact
 fn generate_front_threadlocal(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
 {
-    let concurrent_front = ThreadSafeParetoFront::new();
+    let concurrent_front = ConcurrentParetoFront::new();
     data.par_iter().for_each(|x| {
                        concurrent_front.push(*x);
                    });
@@ -30,9 +30,9 @@ fn generate_front_threadlocal(data: &[ParetoElement]) -> ParetoFront<ParetoEleme
 }
 
 // same thing but without the merge to evaluate its cost
-fn generate_front_threadlocal_unreduced(data: &[ParetoElement]) -> ThreadSafeParetoFront<ParetoElement>
+fn generate_front_threadlocal_unreduced(data: &[ParetoElement]) -> ConcurrentParetoFront<ParetoElement>
 {
-    let concurrent_front = ThreadSafeParetoFront::new();
+    let concurrent_front = ConcurrentParetoFront::new();
     data.par_iter().for_each(|x| {
                        concurrent_front.push(*x);
                    });

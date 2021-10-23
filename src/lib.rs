@@ -81,4 +81,4 @@
 mod pareto_front;
 pub use self::pareto_front::Dominate;
 pub use self::pareto_front::ParetoFront;
-pub use self::pareto_front::ThreadSafeParetoFront;
+pub use self::pareto_front::ConcurrentParetoFront;

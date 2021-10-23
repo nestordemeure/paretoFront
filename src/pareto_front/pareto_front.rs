@@ -45,7 +45,7 @@ impl<T: Dominate> ParetoFront<T>
     /// Returns `true` if the element is now in the Pareto front.
     /// Returns `false` if the element was dominated and, thus, not added to the front.
     ///
-    /// This operation as `O(n)` complexity (where `n` is the number of elements currently in the Pareto front)
+    /// This operation has `O(n)` complexity (where `n` is the number of elements currently in the Pareto front)
     /// but is optimized to favour early stopping and cache friendly.
     ///
     /// This operation might *not* preserve the ordering of the elements in the front.
@@ -110,6 +110,22 @@ impl<T: Dominate> ParetoFront<T>
         // `new_element` has not been dominated, it is thus part of the Pareto front
         self.front.push(new_element);
         return true;
+    }
+
+    /// Adds the content of `pareto_front` to the Pareto front.
+    ///
+    /// This operation has `O(n*m)` complexity
+    /// where `n` is the number of elements in `self`
+    /// and `m` is the number of elements in `pareto_front`.
+    pub fn merge(&mut self, mut pareto_front: ParetoFront<T>)
+    {
+        // insures that we add the smallest front into the largest front
+        if pareto_front.len() > self.len()
+        {
+            std::mem::swap(&mut self.front, &mut pareto_front.front);
+        }
+        // adds the elements of `pareto_front` to `self`
+        self.extend(pareto_front);
     }
 
     /// Extracts a slice containing the entire Pareto front.
