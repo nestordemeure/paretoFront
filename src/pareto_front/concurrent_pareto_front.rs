@@ -4,7 +4,7 @@ use std::{cell::UnsafeCell, marker::Send};
 
 /// Represents a Pareto front that can be pushed into concurrently.
 ///
-/// As this implementation is based on thread-local front,
+/// As this implementation is based on thread-local fronts,
 /// one would get better performance by having explicitely one `ParetoFront` per thread
 /// and merging them when needed.
 ///
@@ -30,7 +30,9 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
     /// Returns `true` if the element *might be* in the Pareto front.
     /// Returns `false` if the element was dominated and, thus, not added to the front.
     ///
-    /// This operation has `O(n)` complexity (where `n` is the number of elements currently in the Pareto front)
+    /// This operation has `O(n/t)` complexity
+    /// where `n` is the number of elements currently in the Pareto front
+    /// and `t` the number of threads used
     /// but is optimized to favour early stopping and cache friendly.
     pub fn push(&self, new_element: T) -> bool
     {
@@ -44,11 +46,11 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
         front.push(new_element)
     }
 
-    /// Turns the concurrent Pareto front into a, sequential, `ParetoFront`
+    /// Turns the concurrent Pareto front into a, sequential, `ParetoFront`.
     ///
     /// This operation has complexity `O(t*n)`
     /// where `t` is the number of threads used
-    /// and `n` is the size fo the Pareto front.
+    /// and `n` is the size of the Pareto front.
     ///
     /// Note that this operation does *not* use any interior paralelism.
     pub fn into_sequential(self) -> ParetoFront<T>
@@ -65,22 +67,6 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
                 front_acc
             })
             .unwrap_or_default() // returns an empty front if no thread ever added to the front
-    }
-}
-
-impl<T: Dominate + Send> From<ParetoFront<T>> for ConcurrentParetoFront<T>
-{
-    /// Converts a `ParetoFront` into a concurrent Pareto front.
-    /// this operation has complexity `O(1)`.
-    fn from(front: ParetoFront<T>) -> Self
-    {
-        // creates new, empty, concurrent Pareto front
-        let result = ConcurrentParetoFront::new();
-        // tries to get a thread-local pareto front
-        // as the front is empty, it triggers the call to front
-        result.inner_front.get_or(|| UnsafeCell::new(front));
-        // returns result
-        result
     }
 }
 
@@ -101,6 +87,22 @@ impl<T: Dominate + Send> Into<ParetoFront<T>> for ConcurrentParetoFront<T>
     fn into(self) -> ParetoFront<T>
     {
         self.into_sequential()
+    }
+}
+
+impl<T: Dominate + Send> From<ParetoFront<T>> for ConcurrentParetoFront<T>
+{
+    /// Converts a `ParetoFront` into a concurrent Pareto front.
+    /// this operation has complexity `O(1)`.
+    fn from(front: ParetoFront<T>) -> Self
+    {
+        // creates new, empty, concurrent Pareto front
+        let result = ConcurrentParetoFront::new();
+        // tries to get a thread-local pareto front
+        // as the front is empty, it triggers the call to front
+        result.inner_front.get_or(|| UnsafeCell::new(front));
+        // returns result
+        result
     }
 }
 
