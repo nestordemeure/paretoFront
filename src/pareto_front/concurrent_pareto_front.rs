@@ -3,8 +3,14 @@ use thread_local::ThreadLocal;
 use std::{cell::UnsafeCell, marker::Send};
 
 /// Represents a Pareto front that can be pushed into concurrently.
-/// TODO note on memory use
-/// TODO impl basic traits like Debug
+///
+/// As this implementation is based on thread-local front,
+/// one would get better performance by having explicitely one `ParetoFront` per thread
+/// and merging them when needed.
+///
+/// We expect this implementation to use approximately `O(t*n)` memory
+/// where `t` is the number of threads used
+/// and `n` is the size of the corresponding sequential Pareto front.
 #[derive(Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ConcurrentParetoFront<T: Dominate + Send>
@@ -20,6 +26,12 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
         ConcurrentParetoFront { inner_front: ThreadLocal::new() }
     }
 
+    /// Adds `new_element` to the Pareto front.
+    /// Returns `true` if the element *might be* in the Pareto front.
+    /// Returns `false` if the element was dominated and, thus, not added to the front.
+    ///
+    /// This operation has `O(n)` complexity (where `n` is the number of elements currently in the Pareto front)
+    /// but is optimized to favour early stopping and cache friendly.
     pub fn push(&self, new_element: T) -> bool
     {
         // gets a mutable *pointer* to the Pareto front associated with the current thread
@@ -34,7 +46,8 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
 
     /// Turns the concurrent Pareto front into a, sequential, `ParetoFront`
     ///
-    /// This operation has complexity `O(t*n)` where `t` is the number of thread used
+    /// This operation has complexity `O(t*n)`
+    /// where `t` is the number of threads used
     /// and `n` is the size fo the Pareto front.
     ///
     /// Note that this operation does *not* use any interior paralelism.
