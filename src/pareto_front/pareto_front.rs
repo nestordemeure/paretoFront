@@ -40,6 +40,44 @@ impl<T: Dominate> ParetoFront<T>
         }
     }
 
+    /// Removes all the elements in the Pareto front that are dominated by `new_element`.
+    /// Returns `true` if `new_element` should be in the Pareto front.
+    /// Returns `false` if `new_element` was dominated and, thus, shouldn't be added to the front.
+    ///
+    /// This operation has `O(n)` complexity (where `n` is the number of elements currently in the Pareto front)
+    /// but is optimized to favour early stopping and cache friendly.
+    ///
+    /// This operation might *not* preserve the ordering of the elements in the front.
+    fn _remove_dominated(&mut self, new_element: &T) -> bool
+    {
+        // for all elements of the pareto front, check whether they are dominated or dominate `new_element`
+        for (index, element) in self.front.iter().enumerate()
+        {
+            if element.dominate(&new_element)
+            {
+                // `new_element` is dominated by `element`, it is thus not part of the Pareto front
+                // swap `element` with the previous element in order to percolate the best elements to the top
+                // NOTE: in my benchmarks this brings clear performance benefits by putting "killer" elements first
+                if index > 0
+                {
+                    self.front.swap(index, index - 1);
+                }
+                return false;
+            }
+            else if new_element.dominate(element)
+            {
+                // `new_element` dominates `element`, it is thus part of the Pareto front
+                self.front.swap_remove(index);
+                // looks at the rest of the Pareto front to remove any further element that are dominated
+                self._remove_dominated_starting_at(&new_element, index);
+                return true;
+            }
+        }
+
+        // `new_element` has not been dominated, it is thus part of the Pareto front
+        return true;
+    }
+
     /// Adds `new_element` to the Pareto front.
     /// Returns `true` if the element is now in the Pareto front.
     /// Returns `false` if the element was dominated and, thus, not added to the front.
@@ -81,34 +119,14 @@ impl<T: Dominate> ParetoFront<T>
     /// ```
     pub fn push(&mut self, new_element: T) -> bool
     {
-        // for all elements of the pareto front, check whether they are dominated or dominate `new_element`
-        for (index, element) in self.front.iter().enumerate()
+        // removes dominated elements from the front and checks whether `new_element` should be added
+        let is_pareto_optimal = self._remove_dominated(&new_element);
+        // adds `new_element` if needed
+        if is_pareto_optimal
         {
-            if element.dominate(&new_element)
-            {
-                // `new_element` is dominated by `element`, it is thus not part of the Pareto front
-                // swap `element` with the previous element in order to percolate the best elements to the top
-                // NOTE: in my benchmarks this brings clear performance benefits by putting "killer" elements first
-                if index > 0
-                {
-                    self.front.swap(index, index - 1);
-                }
-                return false;
-            }
-            else if new_element.dominate(element)
-            {
-                // `new_element` dominates `element`, it is thus part of the Pareto front
-                // look at the rest of the Pareto front to remove any further element that is dominated
-                self._remove_dominated_starting_at(&new_element, index + 1);
-                // replace `element` with `new_element`
-                self.front[index] = new_element;
-                return true;
-            }
+            self.front.push(new_element);
         }
-
-        // `new_element` has not been dominated, it is thus part of the Pareto front
-        self.front.push(new_element);
-        return true;
+        return is_pareto_optimal;
     }
 
     /// Adds the content of `pareto_front` to the Pareto front.
@@ -116,15 +134,21 @@ impl<T: Dominate> ParetoFront<T>
     /// This operation has `O(n*m)` complexity
     /// where `n` is the number of elements in `self`
     /// and `m` is the number of elements in `pareto_front`.
-    pub fn merge(&mut self, mut pareto_front: ParetoFront<T>)
+    pub fn merge(&mut self, pareto_front: ParetoFront<T>)
     {
-        // insures that we add the smallest front into the largest front
-        if pareto_front.len() > self.len()
+        // set the largest front aside
+        let mut largest_front = pareto_front.front;
+        if largest_front.len() < self.front.len()
         {
-            std::mem::swap(&mut self.front, &mut pareto_front.front);
+            std::mem::swap(&mut self.front, &mut largest_front);
         }
-        // adds the elements of `pareto_front` to `self`
-        self.extend(pareto_front);
+        // for all the elements in the largest front, remove dominated elements from the smallest front
+        // keep only the elements that should be in the Pareto front
+        largest_front = largest_front.into_iter().filter(|x| self._remove_dominated(x)).collect();
+        // extends the largest front with the content of the smallest front
+        // and make it our front
+        std::mem::swap(&mut self.front, &mut largest_front);
+        self.front.extend(largest_front);
     }
 
     /// Extracts a slice containing the entire Pareto front.
@@ -229,6 +253,9 @@ impl<T: Dominate> Extend<T> for ParetoFront<T>
     /// Implements the `Extend` trait to extend a `ParetoFront` with the content of an iterator.
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I)
     {
+        // Note: a divide and conquer type of approach
+        //       (creating a new pareto front from `iter` and merging it)
+        //       would likely be faster but also a bit more memory consumming
         for x in iter
         {
             self.push(x);

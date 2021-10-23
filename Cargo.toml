@@ -32,5 +32,13 @@ name = "push"
 harness = false
 
 [[bench]]
+name = "merge"
+harness = false
+
+[[bench]]
+name = "extend"
+harness = false
+
+[[bench]]
 name = "push_concurrent"
 harness = false

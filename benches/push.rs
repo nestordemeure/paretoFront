@@ -18,6 +18,16 @@ fn generate_front(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
     front
 }
 
+/*fn generate_front2(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
+{
+    let mut front = ParetoFront::new();
+    for x in data
+    {
+        front.push2(*x);
+    }
+    front
+}*/
+
 /// measures the speed of several insertions in a row
 fn criterion_benchmark(c: &mut Criterion)
 {
@@ -43,8 +53,7 @@ fn comparison_benchmark(c: &mut Criterion)
     group.bench_function("push", |b| b.iter(|| generate_front(&data)));
     group.bench_function("push2", |b| b.iter(|| generate_front2(&data)));
     group.finish();
-}
-*/
+} */
 
 criterion_group!(benches, criterion_benchmark);
 criterion_main!(benches);

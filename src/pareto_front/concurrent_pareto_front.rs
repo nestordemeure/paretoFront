@@ -56,7 +56,7 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
     pub fn into_sequential(self) -> ParetoFront<T>
     {
         // NOTE: this could be turned into a parallel reduce
-        //       but, a test with `rayon` did not bring any significant speed benefits
+        //       but, tests with `rayon` did not bring any significant speed benefits
         //       however, paralelism might become beneficial on a large (16+) number of cores
         self.inner_front
             .into_iter()
@@ -66,7 +66,7 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
                 front_acc.merge(front);
                 front_acc
             })
-            .unwrap_or_default() // returns an empty front if no thread ever added to the front
+            .unwrap_or_default() // returns an empty front if there was no thread-local front
     }
 }
 
