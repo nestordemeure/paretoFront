@@ -20,7 +20,7 @@ fn generate_front(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
 }
 
 /// insert concurrently in thread local copies of the thread that are merged after the fact
-fn generate_front_threadlocal(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
+fn generate_front_concurrent(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
 {
     let concurrent_front = ConcurrentParetoFront::new();
     data.par_iter().for_each(|x| {
@@ -30,7 +30,7 @@ fn generate_front_threadlocal(data: &[ParetoElement]) -> ParetoFront<ParetoEleme
 }
 
 // same thing but without `into_sequential` to evaluate its cost
-fn generate_front_threadlocal_unreduced(data: &[ParetoElement]) -> ConcurrentParetoFront<ParetoElement>
+fn generate_front_concurrent_unreduced(data: &[ParetoElement]) -> ConcurrentParetoFront<ParetoElement>
 {
     let concurrent_front = ConcurrentParetoFront::new();
     data.par_iter().for_each(|x| {
@@ -46,10 +46,12 @@ fn comparison_benchmark(c: &mut Criterion)
     let seed = 42;
     let data = ParetoElement::sample_n(5000000, seed);
     // compares various functions
-    let mut group = c.benchmark_group("compare_push_concurrent_5000");
-    group.bench_function("push", |b| b.iter(|| generate_front(&data)));
-    group.bench_function("push_threadsafe", |b| b.iter(|| generate_front_threadlocal(&data)));
-    group.bench_function("push_unreduced", |b| b.iter(|| generate_front_threadlocal_unreduced(&data)));
+    let mut group = c.benchmark_group("compare_push_concurrent_5000000");
+    group.bench_function("push_sequential", |b| b.iter(|| generate_front(&data)));
+    group.bench_function("push_concurrent", |b| b.iter(|| generate_front_concurrent(&data)));
+    group.bench_function("push_concurrent_unreduced", |b| {
+             b.iter(|| generate_front_concurrent_unreduced(&data))
+         });
     group.finish();
 }
 

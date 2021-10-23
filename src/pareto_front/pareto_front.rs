@@ -33,11 +33,10 @@ impl<T: Dominate> ParetoFront<T>
         }
 
         // removes the elements at the listed indexes
-        // taking into acount that each removed index will shift all the following indexes
-        // NOTE: reversing the iterator removes the need for `nb_elements_removed` but is slightly slower in my tests
-        for (nb_elements_removed, index) in index_dominated_elements.into_iter().enumerate()
+        // in reverse order to take into acount that each removed index shift all the following indexes
+        for index in index_dominated_elements.into_iter().rev()
         {
-            self.front.swap_remove(index - nb_elements_removed);
+            self.front.swap_remove(index);
         }
     }
 

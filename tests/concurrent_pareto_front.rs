@@ -3,41 +3,11 @@ use pareto_element::ParetoElement;
 use pareto_front::{ConcurrentParetoFront, ParetoFront};
 use rayon::prelude::*;
 
-/// test the associativity of the push operation
-#[test]
-fn push_associativity()
-{
-    // data to be put in the front
-    let seed = 42;
-    let mut data = ParetoElement::sample_n(1000, seed);
-
-    // sequential front
-    let mut seq_front = ParetoFront::new();
-    data.iter().for_each(|x| {
-                   seq_front.push(*x);
-               });
-    let mut seq_front: Vec<_> = seq_front.into();
-    seq_front.sort();
-
-    // sequential front with different insertion order
-    data.sort();
-    let mut sort_front = ParetoFront::new();
-    data.iter().for_each(|x| {
-                   sort_front.push(*x);
-               });
-    let mut sort_front: Vec<_> = sort_front.into();
-    sort_front.sort();
-
-    // check for equality with simulated front
-    assert_eq!(seq_front.len(), sort_front.len());
-    assert!(seq_front.eq(&sort_front));
-}
-
 /// adds 1000 elements to a ParetoFront and a simulated ConcurrentParetoFront
 /// check the result to ensure they are the same
 /// in practice this tests the push and merge operation, reducing the list of potential culprits in case of bug
 #[test]
-fn simulated_insert_concurrent()
+fn simulated_push_concurrent()
 {
     // data to be put in the front
     let seed = 42;
@@ -73,7 +43,7 @@ fn simulated_insert_concurrent()
 /// adds 1000 elements to a ParetoFront and a ConcurrentParetoFront
 /// check the result to ensure they are the same
 #[test]
-fn insert_concurrent()
+fn push_concurrent()
 {
     // data to be put in the front
     let seed = 42;

@@ -4,7 +4,7 @@ use pareto_front::ParetoFront;
 
 /// adds 3 elements to a pareto front and checks to see if the result is correct
 #[test]
-fn insert3()
+fn push3()
 {
     // data to be put in the front
     let x = ParetoElement { cost: 35, quality: 50, score: 4 };
@@ -30,4 +30,34 @@ fn insert3()
     assert_eq!(front_vec.len(), 2);
     assert!(front_vec.contains(&x));
     assert!(front_vec.contains(&v));
+}
+
+/// test the associativity of the push operation
+#[test]
+fn push_associativity()
+{
+    // data to be put in the front
+    let seed = 42;
+    let mut data = ParetoElement::sample_n(1000, seed);
+
+    // sequential front
+    let mut seq_front = ParetoFront::new();
+    data.iter().for_each(|x| {
+                   seq_front.push(*x);
+               });
+    let mut seq_front: Vec<_> = seq_front.into();
+    seq_front.sort();
+
+    // sequential front with different insertion order
+    data.sort();
+    let mut sort_front = ParetoFront::new();
+    data.iter().for_each(|x| {
+                   sort_front.push(*x);
+               });
+    let mut sort_front: Vec<_> = sort_front.into();
+    sort_front.sort();
+
+    // check for equality between both front
+    assert_eq!(seq_front.len(), sort_front.len());
+    assert!(seq_front.eq(&sort_front));
 }
