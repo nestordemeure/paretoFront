@@ -253,9 +253,9 @@ impl<T: Dominate> Extend<T> for ParetoFront<T>
     /// Implements the `Extend` trait to extend a `ParetoFront` with the content of an iterator.
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I)
     {
-        // Note: a divide and conquer type of approach
+        // Note: I tried a divide and conquer type of approach
         //       (creating a new pareto front from `iter` and merging it)
-        //       would likely be faster but also a bit more memory consumming
+        //       but it was slightly slower for all problem sizes
         for x in iter
         {
             self.push(x);

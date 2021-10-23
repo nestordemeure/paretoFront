@@ -15,13 +15,13 @@ fn extend_fronts(mut front: ParetoFront<ParetoElement>,
     front
 }
 
-fn extend_fronts2(mut front: ParetoFront<ParetoElement>,
+/*fn extend_fronts2(mut front: ParetoFront<ParetoElement>,
                   data: Vec<ParetoElement>)
                   -> ParetoFront<ParetoElement>
 {
     front.extend2(data);
     front
-}
+}*/
 
 /// measures the speed of several insertions in a row
 fn criterion_benchmark(c: &mut Criterion)
