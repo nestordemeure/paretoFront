@@ -3,6 +3,73 @@ use pareto_element::ParetoElement;
 use pareto_front::{ConcurrentParetoFront, ParetoFront};
 use rayon::prelude::*;
 
+/// test the associativity of the push operation
+#[test]
+fn push_associativity()
+{
+    // data to be put in the front
+    let seed = 42;
+    let mut data = ParetoElement::sample_n(1000, seed);
+
+    // sequential front
+    let mut seq_front = ParetoFront::new();
+    data.iter().for_each(|x| {
+                   seq_front.push(*x);
+               });
+    let mut seq_front: Vec<_> = seq_front.into();
+    seq_front.sort();
+
+    // sequential front with different insertion order
+    data.sort();
+    let mut sort_front = ParetoFront::new();
+    data.iter().for_each(|x| {
+                   sort_front.push(*x);
+               });
+    let mut sort_front: Vec<_> = sort_front.into();
+    sort_front.sort();
+
+    // check for equality with simulated front
+    assert_eq!(seq_front.len(), sort_front.len());
+    assert!(seq_front.eq(&sort_front));
+}
+
+/// adds 1000 elements to a ParetoFront and a simulated ConcurrentParetoFront
+/// check the result to ensure they are the same
+/// in practice this tests the push and merge operation, reducing the list of potential culprits in case of bug
+#[test]
+fn simulated_insert_concurrent()
+{
+    // data to be put in the front
+    let seed = 42;
+    let data = ParetoElement::sample_n(1000, seed);
+
+    // sequential front
+    let mut seq_front = ParetoFront::new();
+    data.iter().for_each(|x| {
+                   seq_front.push(*x);
+               });
+    let mut seq_front: Vec<_> = seq_front.into();
+    seq_front.sort();
+
+    // simulated concurrent front
+    let mut sim_front: Vec<_> = (0..8).map(|_| ParetoFront::new()).collect();
+    data.iter().enumerate().for_each(|(idx, x)| {
+                               sim_front[idx % 8].push(*x);
+                           });
+    let sim_front = sim_front.into_iter()
+                             .reduce(|mut front_acc, front| {
+                                 front_acc.merge(front);
+                                 front_acc
+                             })
+                             .unwrap_or_default();
+    let mut sim_front: Vec<_> = sim_front.into();
+    sim_front.sort();
+
+    // check for equality with simulated front
+    assert_eq!(seq_front.len(), sim_front.len());
+    assert!(seq_front.eq(&sim_front));
+}
+
 /// adds 1000 elements to a ParetoFront and a ConcurrentParetoFront
 /// check the result to ensure they are the same
 #[test]
@@ -28,14 +95,7 @@ fn insert_concurrent()
     let mut conc_front: Vec<_> = conc_front.into();
     conc_front.sort();
 
-    // checks for equality (after a sort to remove ordering from the potential sources of difference)
+    // checks for equality with concurrent front
     assert_eq!(seq_front.len(), conc_front.len());
-    for (idx, (s, c)) in seq_front.iter().zip(conc_front.iter()).enumerate()
-    {
-        if s != c
-        {
-            println!("{}: {:?} != {:?}", idx, s, c)
-        }
-    }
-    assert!(seq_front.eq(&conc_front))
+    assert!(seq_front.eq(&conc_front));
 }
