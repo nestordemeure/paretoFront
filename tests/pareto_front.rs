@@ -1,32 +1,16 @@
-use pareto_front::{ParetoFront, Dominate};
-
-/// type of the elemnts to be inserted in the front
-#[derive(Debug, Clone, Copy, PartialEq)]
-struct ParetoElement
-{
-    cost: usize,
-    quality: f32,
-    score: i64
-}
-
-/// implement the `Dominate` trait
-impl Dominate for ParetoElement
-{
-    fn dominate(&self, x: &Self) -> bool
-    {
-        (self.cost <= x.cost) && (self.quality >= x.quality) && (self.score >= x.score) && (self != x)
-    }
-}
+mod pareto_element;
+use pareto_element::ParetoElement;
+use pareto_front::ParetoFront;
 
 /// adds 3 elements to a pareto front and checks to see if the result is correct
 #[test]
 fn insert3()
 {
     // data to be put in the front
-    let x = ParetoElement { cost: 35, quality: 0.5, score: 4 };
-    let y = ParetoElement { cost: 350, quality: 0.05, score: 2 };
-    let z = ParetoElement { cost: 6, quality: 0.25, score: 5 };
-    let v = ParetoElement { cost: 5, quality: 0.25, score: 5 };
+    let x = ParetoElement { cost: 35, quality: 50, score: 4 };
+    let y = ParetoElement { cost: 350, quality: 5, score: 2 };
+    let z = ParetoElement { cost: 6, quality: 25, score: 5 };
+    let v = ParetoElement { cost: 5, quality: 25, score: 5 };
 
     // insertions in a new front
     let mut front = ParetoFront::new();
