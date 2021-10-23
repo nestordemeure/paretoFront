@@ -80,13 +80,13 @@ impl<T: Dominate + Send> Into<Vec<T>> for ConcurrentParetoFront<T>
     }
 }
 
-impl<T: Dominate + Send> Into<ParetoFront<T>> for ConcurrentParetoFront<T>
+impl<T: Dominate + Send> From<ConcurrentParetoFront<T>> for ParetoFront<T>
 {
     /// Converts the concurrent Pareto front into a `ParetoFront`.
     /// This operation has the complexity of `into_sequential`.
-    fn into(self) -> ParetoFront<T>
+    fn from(front: ConcurrentParetoFront<T>) -> ParetoFront<T>
     {
-        self.into_sequential()
+        front.into_sequential()
     }
 }
 
