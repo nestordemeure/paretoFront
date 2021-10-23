@@ -11,7 +11,7 @@ use std::{cell::UnsafeCell, marker::Send};
 /// We expect this implementation to use approximately `O(t*n)` memory
 /// where `t` is the number of threads used
 /// and `n` is the size of the corresponding sequential Pareto front.
-#[derive(Default)]
+#[derive(Default, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ConcurrentParetoFront<T: Dominate + Send>
 {
@@ -65,5 +65,87 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
                 front_acc
             })
             .unwrap_or_default() // returns an empty front if no thread ever added to the front
+    }
+}
+
+impl<T: Dominate + Send> From<ParetoFront<T>> for ConcurrentParetoFront<T>
+{
+    /// Converts a `ParetoFront` into a concurrent Pareto front.
+    /// this operation has complexity `O(1)`.
+    fn from(front: ParetoFront<T>) -> Self
+    {
+        // creates new, empty, concurrent Pareto front
+        let result = ConcurrentParetoFront::new();
+        // tries to get a thread-local pareto front
+        // as the front is empty, it triggers the call to front
+        result.inner_front.get_or(|| UnsafeCell::new(front));
+        // returns result
+        result
+    }
+}
+
+impl<T: Dominate + Send> Into<Vec<T>> for ConcurrentParetoFront<T>
+{
+    /// Converts the concurrent Pareto front into a vector.
+    /// This operation has the complexity of `into_sequential`.
+    fn into(self) -> Vec<T>
+    {
+        self.into_sequential().into()
+    }
+}
+
+impl<T: Dominate + Send> Into<ParetoFront<T>> for ConcurrentParetoFront<T>
+{
+    /// Converts the concurrent Pareto front into a `ParetoFront`.
+    /// This operation has the complexity of `into_sequential`.
+    fn into(self) -> ParetoFront<T>
+    {
+        self.into_sequential()
+    }
+}
+
+impl<T: Dominate + Send> IntoIterator for ConcurrentParetoFront<T>
+{
+    type Item = T;
+    type IntoIter = std::vec::IntoIter<T>;
+
+    /// Creates an iterator from a `ConcurrentParetoFront`.
+    /// This operation has the complexity of `into_sequential`.
+    fn into_iter(self) -> Self::IntoIter
+    {
+        self.into_sequential().into_iter()
+    }
+}
+
+impl<T: Dominate + Send> FromIterator<T> for ConcurrentParetoFront<T>
+{
+    /// Implements the `FromIterator` trait to enable the collection of an iterator into a `ConcurrentParetoFront`.
+    ///
+    /// Note that, while this operation is slightly cheaper than a serie of sequential push into a `ConcurrentParetoFront`,
+    /// it does *not* use any interior paralelism.
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self
+    {
+        let mut front = ConcurrentParetoFront::new();
+        front.extend(iter); // we reuse the implementation of extend
+        front
+    }
+}
+
+impl<T: Dominate + Send> Extend<T> for ConcurrentParetoFront<T>
+{
+    /// Implements the `Extend` trait to extend a `ConcurrentParetoFront` with the content of an iterator.
+    ///
+    /// Note that, while this operation is slightly cheaper than a serie of sequential push into a `ConcurrentParetoFront`,
+    /// it does *not* use any interior paralelism.
+    fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I)
+    {
+        // gets a mutable *pointer* to the Pareto front associated with the current thread
+        let front_ptr = self.inner_front.get_or_default().get();
+        // converts the pointer into a mutable reference
+        // Note: safe because only one thread can access a thread-local front
+        //       this has been validated with a RefCell
+        let front = unsafe { &mut *front_ptr };
+        // push the new elements in the Pareto front
+        front.extend(iter)
     }
 }

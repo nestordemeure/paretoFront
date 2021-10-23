@@ -145,12 +145,6 @@ impl<T: Dominate> ParetoFront<T>
     {
         self.front.iter()
     }
-
-    /// Returns an iterator that allows modifying each value.
-    pub fn iter_mut(&mut self) -> IterMut<T>
-    {
-        self.front.iter_mut()
-    }
 }
 
 impl<T: Dominate> Default for ParetoFront<T>

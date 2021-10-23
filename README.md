@@ -61,6 +61,7 @@ The resulting Pareto front can be converted into an iterator, a slice or a vecto
 
 I need to polish the concurrent pareto front:
 
+- add doc to readme and lib.rs
 - add clone and other common traits
 - add from/into paretoFront method
 - lock concurrency behind a feature to avoid having to import dependencies that are not used by most people (?)
