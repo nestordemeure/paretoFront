@@ -31,8 +31,9 @@ fn criterion_benchmark(c: &mut Criterion)
     c.bench_function("insert 5000", |b| b.iter(|| generate_front(&data)));
 }
 
+/*
 /// compares two implementation of the `push` function
-/*fn comparison_benchmark(c: &mut Criterion)
+fn comparison_benchmark(c: &mut Criterion)
 {
     // data used for the bench
     let seed = 42;
@@ -42,7 +43,8 @@ fn criterion_benchmark(c: &mut Criterion)
     group.bench_function("push", |b| b.iter(|| generate_front(&data)));
     group.bench_function("push2", |b| b.iter(|| generate_front2(&data)));
     group.finish();
-}*/
+}
+*/
 
 criterion_group!(benches, criterion_benchmark);
 criterion_main!(benches);

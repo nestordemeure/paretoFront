@@ -1,5 +1,5 @@
 use crate::Dominate;
-use std::slice::{Iter, IterMut};
+use std::slice::Iter;
 use std::iter::FromIterator;
 
 /// Represents a Pareto front.

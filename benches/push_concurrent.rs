@@ -29,7 +29,7 @@ fn generate_front_threadlocal(data: &[ParetoElement]) -> ParetoFront<ParetoEleme
     concurrent_front.into_sequential()
 }
 
-// same thing but without the merge to evaluate its cost
+// same thing but without `into_sequential` to evaluate its cost
 fn generate_front_threadlocal_unreduced(data: &[ParetoElement]) -> ConcurrentParetoFront<ParetoElement>
 {
     let concurrent_front = ConcurrentParetoFront::new();
@@ -47,9 +47,9 @@ fn comparison_benchmark(c: &mut Criterion)
     let data = ParetoElement::sample_n(5000000, seed);
     // compares various functions
     let mut group = c.benchmark_group("compare_push_concurrent_5000");
-    //group.bench_function("push", |b| b.iter(|| generate_front(&data)));
+    group.bench_function("push", |b| b.iter(|| generate_front(&data)));
     group.bench_function("push_threadsafe", |b| b.iter(|| generate_front_threadlocal(&data)));
-    //group.bench_function("push_unreduced", |b| b.iter(|| generate_front_threadlocal_unreduced(&data)));
+    group.bench_function("push_unreduced", |b| b.iter(|| generate_front_threadlocal_unreduced(&data)));
     group.finish();
 }
 
