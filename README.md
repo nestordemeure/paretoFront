@@ -4,13 +4,15 @@ The `pareto_front` crate is a Rust library to build a [Pareto front](https://en.
 
 This is particularly useful in multi-objectives optimization where, instead of having a single maximum that one can easily keep track off, one might want to keep track of various trade-offs, none of which is best on all axis, found during the optimization.
 
-This crate tries its best to be small, *really fast* and correct.
+This crate tries to be small yet *really fast* and correct.
 
 ## Functionalities
 
 This crate gives you access to the `ParetoFront` type which can be created (empty or from an iterator), updated by adding new candidates (using the `push` or the `extend` method) and converted into an iterator, a slice or a vector.
 
-Additionaly, the `pareto_front_serde` feature lets you serialize and deserialize the `ParetoFront` type using [serde](https://serde.rs/).
+The `pareto_front_concurrent` feature unlocks the `ConcurrentParetoFront` type which can be used to build a Pareto front inside a parallel algorithm without needing to put a lock around a `ParetoFront`.
+
+The `pareto_front_serde` feature lets you serialize and deserialize the `ParetoFront` type using [serde](https://serde.rs/).
 
 ## Usage
 
@@ -56,10 +58,3 @@ let z_is_pareto_optimal = front.push(z);
 ```
 
 The resulting Pareto front can be converted into an iterator, a slice or a vector.
-
-## TODO
-
-I need to polish the concurrent Pareto front:
-
-- add info on `ConcurrentParetoFront` to readme and lib.rs
-- publish to crates.io
