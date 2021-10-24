@@ -133,7 +133,8 @@ impl<T: Dominate> ParetoFront<T>
     ///
     /// This operation has `O(n*m)` complexity
     /// where `n` is the number of elements in `self`
-    /// and `m` is the number of elements in `pareto_front`.
+    /// and `m` is the number of elements in `pareto_front`
+    /// but is optimized to favour early stopping.
     pub fn merge(&mut self, pareto_front: ParetoFront<T>)
     {
         // set the largest front aside
@@ -168,6 +169,8 @@ impl<T: Dominate> ParetoFront<T>
     {
         self.front.iter()
     }
+
+    // no `iter_mut` as the mutation could invalidate the front
 }
 
 impl<T: Dominate> Default for ParetoFront<T>

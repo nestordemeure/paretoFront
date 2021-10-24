@@ -33,8 +33,11 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
     ///
     /// This operation has `O(n/t)` complexity
     /// where `n` is the number of elements currently in the Pareto front
-    /// and `t` the number of threads used
-    /// but is optimized to favour early stopping and cache friendly.
+    /// and `t` the number of threads used.
+    /// It is cache friendly and optimized to favour early stopping.
+    ///
+    /// Note that this operation does *not* use any interior paralelism.
+    /// Rather, it is meant to be called in parallel.
     pub fn push(&self, new_element: T) -> bool
     {
         // gets a mutable *pointer* to the Pareto front associated with the current thread

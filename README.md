@@ -8,7 +8,7 @@ This crate tries to be small yet *really fast* and correct.
 
 ## Functionalities
 
-This crate gives you access to the `ParetoFront` type which can be created (empty or from an iterator), updated by adding new candidates (using the `push` or the `extend` method) and converted into an iterator, a slice or a vector.
+This crate gives you access to the `ParetoFront` type which can be created (empty or from an iterator), updated by adding new potential elements (using the `push` or the `extend` method) and converted into an iterator, a slice or a vector.
 
 The `pareto_front_concurrent` feature unlocks the `ConcurrentParetoFront` type which can be used to build a Pareto front inside a parallel algorithm without needing to put a lock around a `ParetoFront`.
 
