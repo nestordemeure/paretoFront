@@ -37,7 +37,7 @@ fn criterion_benchmark(c: &mut Criterion)
     c.bench_function("extend_500000", |b| b.iter(|| extend_fronts(front.clone(), data.clone())));
 }
 
-/// compares two implementation of the `push` function
+// compares two implementation of the `push` function
 /*fn comparison_benchmark(c: &mut Criterion)
 {
     // data used for the push

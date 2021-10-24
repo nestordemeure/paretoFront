@@ -4,7 +4,7 @@ The `pareto_front` crate is a Rust library to build a [Pareto front](https://en.
 
 This is particularly useful in multi-objectives optimization where, instead of having a single maximum that one can easily keep track off, one might want to keep track of various trade-offs, none of which is best on all axis, found during the optimization.
 
-This crate aims to be small yet very fast.
+This crate tries its best to be small, *really fast* and correct.
 
 ## Functionalities
 
@@ -61,6 +61,5 @@ The resulting Pareto front can be converted into an iterator, a slice or a vecto
 
 I need to polish the concurrent Pareto front:
 
-- put `ConcurrentParetoFront` behind a feature to avoid having to import dependencies that are not used by most people (?)
 - add info on `ConcurrentParetoFront` to readme and lib.rs
 - publish to crates.io

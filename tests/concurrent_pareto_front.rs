@@ -1,7 +1,6 @@
 mod pareto_element;
 use pareto_element::ParetoElement;
-use pareto_front::{ConcurrentParetoFront, ParetoFront};
-use rayon::prelude::*;
+use pareto_front::ParetoFront;
 
 /// adds 1000 elements to a ParetoFront and a simulated ConcurrentParetoFront
 /// check the result to ensure they are the same
@@ -43,8 +42,12 @@ fn simulated_push_concurrent()
 /// adds 1000 elements to a ParetoFront and a ConcurrentParetoFront
 /// check the result to ensure they are the same
 #[test]
+#[cfg(feature = "pareto_front_concurrent")]
 fn push_concurrent()
 {
+    use pareto_front::ConcurrentParetoFront;
+    use rayon::prelude::*;
+
     // data to be put in the front
     let seed = 42;
     let data = ParetoElement::sample_n(1000, seed);

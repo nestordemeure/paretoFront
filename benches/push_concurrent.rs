@@ -3,10 +3,12 @@ use criterion::{criterion_group, criterion_main, Criterion};
 // element type to do our benchmarks on
 mod pareto_element;
 use pareto_element::ParetoElementCircle as ParetoElement;
-// paralelism
-use rayon::prelude::*;
 // pareto front
 use pareto_front::ParetoFront;
+// paralelism
+#[cfg(feature = "pareto_front_concurrent")]
+use rayon::prelude::*;
+#[cfg(feature = "pareto_front_concurrent")]
 use pareto_front::ConcurrentParetoFront;
 
 /// inserts all the element from data into a pareto front using the `push` function
@@ -20,6 +22,7 @@ fn generate_front(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
 }
 
 /// insert concurrently in thread local copies of the thread that are merged after the fact
+#[cfg(feature = "pareto_front_concurrent")]
 fn generate_front_concurrent(data: &[ParetoElement]) -> ParetoFront<ParetoElement>
 {
     let concurrent_front = ConcurrentParetoFront::new();
@@ -29,7 +32,8 @@ fn generate_front_concurrent(data: &[ParetoElement]) -> ParetoFront<ParetoElemen
     concurrent_front.into_sequential()
 }
 
-// same thing but without `into_sequential` to evaluate its cost
+/// same thing but without `into_sequential` to evaluate its cost
+#[cfg(feature = "pareto_front_concurrent")]
 fn generate_front_concurrent_unreduced(data: &[ParetoElement]) -> ConcurrentParetoFront<ParetoElement>
 {
     let concurrent_front = ConcurrentParetoFront::new();
@@ -48,7 +52,9 @@ fn comparison_benchmark(c: &mut Criterion)
     // compares various functions
     let mut group = c.benchmark_group("compare_push_concurrent_5000000");
     group.bench_function("push_sequential", |b| b.iter(|| generate_front(&data)));
+    #[cfg(feature = "pareto_front_concurrent")]
     group.bench_function("push_concurrent", |b| b.iter(|| generate_front_concurrent(&data)));
+    #[cfg(feature = "pareto_front_concurrent")]
     group.bench_function("push_concurrent_unreduced", |b| {
              b.iter(|| generate_front_concurrent_unreduced(&data))
          });

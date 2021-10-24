@@ -11,8 +11,9 @@ use std::{cell::UnsafeCell, marker::Send};
 /// We expect this implementation to use approximately `O(t*n)` memory
 /// where `t` is the number of threads used
 /// and `n` is the size of the corresponding sequential Pareto front.
+///
+/// **NOTE: This struct is only available when enabling the `pareto_front_concurrent` feature.**
 #[derive(Default, Debug)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ConcurrentParetoFront<T: Dominate + Send>
 {
     inner_front: ThreadLocal<UnsafeCell<ParetoFront<T>>>

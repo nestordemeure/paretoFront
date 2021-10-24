@@ -37,7 +37,7 @@ fn criterion_benchmark(c: &mut Criterion)
     c.bench_function("merge_500000", |b| b.iter(|| merge_fronts(front1.clone(), front2.clone())));
 }
 
-/// compares two implementation of the `push` function
+// compares two implementation of the `push` function
 /*fn comparison_benchmark(c: &mut Criterion)
 {
     // data used for the push
