@@ -32,7 +32,7 @@ fn criterion_benchmark(c: &mut Criterion)
     // fronts
     let cutpoint = data.len() / 8;
     let front: ParetoFront<_> = data[cutpoint..].iter().cloned().collect();
-    let data: Vec<_> = data[..cutpoint].iter().cloned().collect();
+    let data: Vec<_> = data[..cutpoint].to_vec();
     // actual bench
     c.bench_function("extend_500000", |b| b.iter(|| extend_fronts(front.clone(), data.clone())));
 }

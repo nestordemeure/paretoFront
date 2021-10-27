@@ -79,8 +79,8 @@
 //!
 //! The resultng Pareto front can be converted into an iterator, a slice or a vector.
 
-mod pareto_front;
-pub use self::pareto_front::Dominate;
-pub use self::pareto_front::ParetoFront;
+mod pareto_front_implementation;
+pub use self::pareto_front_implementation::Dominate;
+pub use self::pareto_front_implementation::ParetoFront;
 #[cfg(feature = "pareto_front_concurrent")]
-pub use self::pareto_front::ConcurrentParetoFront;
+pub use self::pareto_front_implementation::ConcurrentParetoFront;

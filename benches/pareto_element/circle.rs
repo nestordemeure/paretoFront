@@ -37,7 +37,7 @@ impl ParetoElementCircle
             x = distribution.sample(rng);
             y = distribution.sample(rng);
         }
-        Self { x: x, y: y }
+        Self { x, y }
     }
 
     /// creates the given number of elements and put them in a slice

@@ -1,6 +1,5 @@
 #![allow(dead_code)]
-mod pareto_front;
-use ::pareto_front::{Dominate, ParetoFront};
+use pareto_front::{Dominate, ParetoFront};
 
 /// test element
 #[derive(Debug, PartialEq)]

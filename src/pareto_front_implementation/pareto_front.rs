@@ -15,7 +15,7 @@ impl<T: Dominate> ParetoFront<T>
     /// Constructs a new, empty, Pareto front.
     pub fn new() -> Self
     {
-        return ParetoFront { front: Vec::new() };
+        ParetoFront { front: Vec::new() }
     }
 
     /// Removes all elements in the front that are dominated by `new_element`,
@@ -53,7 +53,7 @@ impl<T: Dominate> ParetoFront<T>
         // for all elements of the pareto front, check whether they are dominated or dominate `new_element`
         for (index, element) in self.front.iter().enumerate()
         {
-            if element.dominate(&new_element)
+            if element.dominate(new_element)
             {
                 // `new_element` is dominated by `element`, it is thus not part of the Pareto front
                 // swap `element` with the previous element in order to percolate the best elements to the top
@@ -69,13 +69,13 @@ impl<T: Dominate> ParetoFront<T>
                 // `new_element` dominates `element`, it is thus part of the Pareto front
                 self.front.swap_remove(index);
                 // looks at the rest of the Pareto front to remove any further element that are dominated
-                self._remove_dominated_starting_at(&new_element, index);
+                self._remove_dominated_starting_at(new_element, index);
                 return true;
             }
         }
 
         // `new_element` has not been dominated, it is thus part of the Pareto front
-        return true;
+        true
     }
 
     /// Adds `new_element` to the Pareto front.
@@ -126,7 +126,7 @@ impl<T: Dominate> ParetoFront<T>
         {
             self.front.push(new_element);
         }
-        return is_pareto_optimal;
+        is_pareto_optimal
     }
 
     /// Adds the content of `pareto_front` to the Pareto front.
@@ -164,6 +164,12 @@ impl<T: Dominate> ParetoFront<T>
         self.front.len()
     }
 
+    /// Returns `true` if the Pareto front contains no elements.
+    pub fn is_empty(&self) -> bool
+    {
+        self.front.is_empty()
+    }
+
     /// Returns an iterator over the Pareto front.
     pub fn iter(&self) -> Iter<T>
     {
@@ -183,13 +189,13 @@ impl<T: Dominate> Default for ParetoFront<T>
     }
 }
 
-impl<T: Dominate> Into<Vec<T>> for ParetoFront<T>
+impl<T: Dominate> From<ParetoFront<T>> for Vec<T>
 {
     /// Converts the Pareto front into a vector.
     /// This operation is free as the underlying datastructure is a vector.
-    fn into(self) -> Vec<T>
+    fn from(front: ParetoFront<T>) -> Vec<T>
     {
-        self.front
+        front.front
     }
 }
 
