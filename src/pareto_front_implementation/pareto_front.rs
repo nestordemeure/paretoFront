@@ -119,19 +119,54 @@ impl<T: Dominate> ParetoFront<T>
     /// ```
     pub fn push(&mut self, new_element: T) -> bool
     {
-        self.push_and_transform(new_element, |x| x)
-    }
-
-    pub fn push_and_transform(&mut self, new_element: T, transform: impl FnOnce(T) -> T) -> bool
-    {
         // removes dominated elements from the front and checks whether `new_element` should be added
         let is_pareto_optimal = self._remove_dominated(&new_element);
         // adds `new_element` if needed
         if is_pareto_optimal
         {
-            self.front.push((transform)(new_element));
+            self.front.push(new_element);
         }
         is_pareto_optimal
+    }
+
+    // TODO: doc comments. I will write this if this is the correct approach
+    pub fn push_and_check(&mut self, mut new_element: T, mut check: impl FnMut(&mut T) -> bool) -> bool
+    {
+        // for all elements of the pareto front, check whether they are dominated or dominate `new_element`
+        for (index, element) in self.front.iter().enumerate()
+        {
+            if element.dominate(&new_element)
+            {
+                // `new_element` is dominated by `element`, it is thus not part of the Pareto front
+                // swap `element` with the previous element in order to percolate the best elements to the top
+                // NOTE: in my benchmarks this brings clear performance benefits by putting "killer" elements first
+                if index > 0
+                {
+                    self.front.swap(index, index - 1);
+                }
+                return false;
+            }
+            else if new_element.dominate(element) && (check)(&mut new_element)
+            {
+                // `new_element` dominates `element`, it is thus part of the Pareto front
+                self.front.swap_remove(index);
+                // looks at the rest of the Pareto front to remove any further element that are dominated
+                self._remove_dominated_starting_at(&new_element, index);
+                self.front.push(new_element);
+                return true;
+            }
+        }
+
+        if (check)(&mut new_element)
+        {
+            // `new_element` has not been dominated, it is thus part of the Pareto front
+            self.front.push(new_element);
+            true
+        }
+        else
+        {
+            false
+        }
     }
 
     /// Adds the content of `pareto_front` to the Pareto front.

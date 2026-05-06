@@ -3,38 +3,40 @@ use pareto_front::{Dominate, ParetoFront};
 
 /// test element
 #[derive(Debug, PartialEq)]
-struct ParetoElement
-{
-    cost: usize,
-    quality: f32,
-    score: i64
+struct ParetoElement {
+    partial_data: i32,
+    rest_of_the_data: Option<i32>,
 }
 
 /// implement the `Dominate` trait
-impl Dominate for ParetoElement
-{
-    fn dominate(&self, x: &Self) -> bool
-    {
-        (self.cost <= x.cost) && (self.quality >= x.quality) && (self.score >= x.score) && (self != x)
+impl Dominate for ParetoElement {
+    fn dominate(&self, x: &Self) -> bool {
+        self.partial_data < x.partial_data
     }
 }
 
-fn main()
-{
+fn main() {
     // data to be put in the front
-    let x = ParetoElement { cost: 35, quality: 0.5, score: 4 };
-    let y = ParetoElement { cost: 350, quality: 0.05, score: 2 };
-    let z = ParetoElement { cost: 5, quality: 0.25, score: 5 };
+    let x = ParetoElement { partial_data: 1, rest_of_the_data: None };
+    let y = ParetoElement { partial_data: 2, rest_of_the_data: None };
+    let z = ParetoElement { partial_data: 3, rest_of_the_data: None };
 
     // insertions in the front
     let mut front = ParetoFront::new();
-    front.push(x);
-    front.push(y);
-    front.push(z);
+
+    fn compute_rest_expensively(pareto_element: &mut ParetoElement) -> bool {
+        // Pretend this is super expensive
+        pareto_element.rest_of_the_data =
+            if pareto_element.partial_data % 2 == 0 { Some(pareto_element.partial_data * 2) } else { None };
+        pareto_element.rest_of_the_data.is_some()
+    }
+
+    front.push_and_check(x, compute_rest_expensively);
+    front.push_and_check(y, compute_rest_expensively);
+    front.push_and_check(z, compute_rest_expensively);
 
     // display of the result
-    for (i, element) in front.iter().enumerate()
-    {
+    for (i, element) in front.iter().enumerate() {
         println!("{}: {:?}", i, element);
     }
 }
