@@ -145,7 +145,7 @@ impl<T: Dominate> ParetoFront<T>
         }
         // for all the elements in the largest front, remove dominated elements from the smallest front
         // keep only the elements that should be in the Pareto front
-        largest_front = largest_front.into_iter().filter(|x| self._remove_dominated(x)).collect();
+        largest_front.retain(|x| self._remove_dominated(x));
         // extends the largest front with the content of the smallest front
         // and make it our front
         std::mem::swap(&mut self.front, &mut largest_front);
@@ -171,7 +171,7 @@ impl<T: Dominate> ParetoFront<T>
     }
 
     /// Returns an iterator over the Pareto front.
-    pub fn iter(&self) -> Iter<T>
+    pub fn iter<'a>(&'a self) -> Iter<'a, T>
     {
         self.front.iter()
     }
