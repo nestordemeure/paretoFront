@@ -119,12 +119,17 @@ impl<T: Dominate> ParetoFront<T>
     /// ```
     pub fn push(&mut self, new_element: T) -> bool
     {
+        self.push_and_transform(new_element, |x| x)
+    }
+
+    pub fn push_and_transform(&mut self, new_element: T, transform: impl FnOnce(T) -> T) -> bool
+    {
         // removes dominated elements from the front and checks whether `new_element` should be added
         let is_pareto_optimal = self._remove_dominated(&new_element);
         // adds `new_element` if needed
         if is_pareto_optimal
         {
-            self.front.push(new_element);
+            self.front.push((transform)(new_element));
         }
         is_pareto_optimal
     }
