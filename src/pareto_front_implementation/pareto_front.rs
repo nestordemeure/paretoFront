@@ -48,7 +48,7 @@ impl<T: Dominate> ParetoFront<T>
     /// but is optimized to favour early stopping and cache friendly.
     ///
     /// This operation might *not* preserve the ordering of the elements in the front.
-    fn _remove_dominated(&mut self, new_element: &T) -> bool
+    pub fn remove_dominated(&mut self, new_element: &T) -> bool
     {
         // for all elements of the pareto front, check whether they are dominated or dominate `new_element`
         for (index, element) in self.front.iter().enumerate()
@@ -120,7 +120,7 @@ impl<T: Dominate> ParetoFront<T>
     pub fn push(&mut self, new_element: T) -> bool
     {
         // removes dominated elements from the front and checks whether `new_element` should be added
-        let is_pareto_optimal = self._remove_dominated(&new_element);
+        let is_pareto_optimal = self.remove_dominated(&new_element);
         // adds `new_element` if needed
         if is_pareto_optimal
         {
@@ -145,7 +145,7 @@ impl<T: Dominate> ParetoFront<T>
         }
         // for all the elements in the largest front, remove dominated elements from the smallest front
         // keep only the elements that should be in the Pareto front
-        largest_front.retain(|x| self._remove_dominated(x));
+        largest_front.retain(|x| self.remove_dominated(x));
         // extends the largest front with the content of the smallest front
         // and make it our front
         std::mem::swap(&mut self.front, &mut largest_front);
