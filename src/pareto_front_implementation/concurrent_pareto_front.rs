@@ -52,9 +52,8 @@ impl<T: Dominate + Send> ConcurrentParetoFront<T>
 
     /// Turns the concurrent Pareto front into a, sequential, `ParetoFront`.
     ///
-    /// This operation has complexity `O(t*n)`
-    /// where `t` is the number of threads used
-    /// and `n` is the size of the Pareto front.
+    /// This operation has complexity `O(n²)`
+    /// where `n` is the size of the Pareto front.
     ///
     /// Note that this operation does *not* use any interior paralelism.
     pub fn into_sequential(self) -> ParetoFront<T>
