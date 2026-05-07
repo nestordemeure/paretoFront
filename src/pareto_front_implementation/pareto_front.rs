@@ -78,6 +78,18 @@ impl<T: Dominate> ParetoFront<T>
         true
     }
 
+    /// Returns `true` if `new_element` would be added to the Pareto front on a call to `front.push(new_element)`.
+    /// Returns `false` if it is dominated and would not be added.
+    ///
+    /// This operation has `O(n)` complexity (where `n` is the number of elements currently in the Pareto front)
+    /// but is optimized to favour early stopping and cache friendly.
+    ///
+    /// NOTE: not available for `ConcurrentParetoFront` as data races with concurrent calls to `push` would make the output untrustworthy.
+    pub fn is_pareto_optimal(&self, new_element: &T) -> bool
+    {
+        !self.front.iter().any(|element| element.dominate(new_element))
+    }
+
     /// Adds `new_element` to the Pareto front.
     /// Returns `true` if the element is now in the Pareto front.
     /// Returns `false` if the element was dominated and, thus, not added to the front.

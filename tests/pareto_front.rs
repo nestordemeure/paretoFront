@@ -32,6 +32,23 @@ fn push3()
     assert!(front_vec.contains(&v));
 }
 
+/// checks that `is_pareto_optimal` matches the result of `push`
+#[test]
+fn is_pareto_optimal()
+{
+    // data to be put in the front
+    let seed = 42;
+    let data = ParetoElement::sample_n(1000, seed);
+
+    let mut front = ParetoFront::new();
+    for x in data.iter()
+    {
+        let belongs = front.is_pareto_optimal(x);
+        let pushed = front.push(*x);
+        assert_eq!(belongs, pushed);
+    }
+}
+
 /// test the associativity of the push operation
 #[test]
 fn push_associativity()
