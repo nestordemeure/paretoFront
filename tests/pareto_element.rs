@@ -24,7 +24,7 @@ impl ParetoElement
     /// creates a fully random element using the given random number generator
     pub fn sample<R: Rng + ?Sized>(rng: &mut R) -> Self
     {
-        Self { cost: rng.gen(), quality: rng.gen(), score: rng.gen() }
+        Self { cost: rng.random_range(0..=usize::MAX), quality: rng.random(), score: rng.random() }
     }
 
     /// creates the given number of elements and put them in a slice

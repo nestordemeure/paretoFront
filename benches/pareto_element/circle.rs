@@ -29,7 +29,7 @@ impl ParetoElementCircle
     /// alements are within a circle
     pub fn sample<R: Rng + ?Sized>(rng: &mut R) -> Self
     {
-        let distribution = Uniform::new(0., 1.);
+        let distribution = Uniform::new(0., 1.).unwrap();
         let mut x: f64 = distribution.sample(rng);
         let mut y: f64 = distribution.sample(rng);
         while (1. - x).hypot(1. - y) > 1.

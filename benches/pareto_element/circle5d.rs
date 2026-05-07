@@ -1,5 +1,4 @@
 //! Element type to be used in tests and bench
-use std::convert::TryInto;
 use pareto_front::Dominate;
 use rand::{Rng, SeedableRng, rngs::StdRng};
 use rand_distr::{Distribution, Uniform};
@@ -33,7 +32,7 @@ impl ParetoElementCircle5D
     /// alements are within a circle
     pub fn sample<R: Rng + ?Sized>(mut rng: &mut R) -> Self
     {
-        let distribution = Uniform::new(0., 1.);
+        let distribution = Uniform::new(0., 1.).unwrap();
         let mut coordinates: Vec<f64> = distribution.sample_iter(&mut rng).take(5).collect();
         let mut radius = coordinates.iter().map(|c| (1. - c) * (1. - c)).sum::<f64>();
         while radius > 1.
