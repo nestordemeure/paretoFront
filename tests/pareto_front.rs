@@ -32,9 +32,9 @@ fn push3()
     assert!(front_vec.contains(&v));
 }
 
-/// checks that `is_pareto_optimal` matches the result of `push`
+/// checks that `dominate` matches the result of `push`
 #[test]
-fn is_pareto_optimal()
+fn dominate()
 {
     // data to be put in the front
     let seed = 42;
@@ -43,9 +43,9 @@ fn is_pareto_optimal()
     let mut front = ParetoFront::new();
     for x in data.iter()
     {
-        let belongs = front.is_pareto_optimal(x);
+        let dominated = front.dominate(x);
         let pushed = front.push(*x);
-        assert_eq!(belongs, pushed);
+        assert_ne!(dominated, pushed);
     }
 }
 
