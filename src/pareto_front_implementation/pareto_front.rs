@@ -153,7 +153,7 @@ impl<T: Dominate> ParetoFront<T>
             std::mem::swap(&mut self.front, &mut largest_front);
         }
         // for all the elements in the largest front, remove dominated elements from the smallest front
-        // keep only the elements that should be in the Pareto front
+        // the largest front keeps only the elements that should be in the final Pareto front
         largest_front.retain(|x| self._remove_dominated(x));
         // extends the largest front with the content of the smallest front
         // and make it our front
